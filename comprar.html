@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="index.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="headerDiv" id="headerDiv">
+        <h1 class="pageTitle">JUNIOR SALE</h1>
+    </div>
+    <div class="mainDiv" id="mainDiv">
+        <div class="searchForDiv">
+            <div>
+                <label>Buscar</label>
+                <input class="comprarInput" type="search" id="searchBar" value="">
+            </div>
+            <div>
+                <label>Pagina</label>
+                <input class="comprarInput" id="pageSelector" type="number" value="1" min="1" max="9">
+            </div>
+        </div>
+
+        <table id="mainTable" class="studentCatalog">
+            <thead>
+                <tr class="header">
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Grade</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+        <h2 id="chosenStudent">Seleccione un nombre</h2>
+        <form id="form">
+            <input id="sellerID" name="sellerID" hidden>
+            <input id="buyer" name="buyer" hidden>
+            <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                <div style="display: flex; flex-direction: column;">
+                    <label>Escoja una accion</label>
+                    <select id="modeSelect" class="comprarInput">
+                        <option value="none">Elegir...</option>
+                        <option value="buy">Comprar</option>
+                        <option value="pay">Abonar</option>
+                    </select>            
+                </div>
+                <div id="comprarDiv" class="hidden lastMenu">
+                    <label id="productoLabel">Producto</label>
+                    <input class="comprarInput" id="item" name="item" placeholder="Producto">
+                    <label id="montoLabel">Precio</label>
+                    <input class="comprarInput" id="cost" name="cost" placeholder="Precio" type="text">
+                    <label id="cantidadLabel">Cantidad</label>
+                    <input class="comprarInput" type="number" id="quantity" name="quantity" min="1" value="1">
+                    <input class="comprarInput" type="submit" id="comprarButton" value="Comprar">
+                    <button class="comprarInput" type="button" id="finalSubmitButton">Guardar cambios</button>
+                </div>
+            </div>
+        </form>    
+
+    </div>
+    <script src="comprar.js"></script>
+</body>
+
+</html>
