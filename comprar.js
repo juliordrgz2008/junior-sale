@@ -143,7 +143,7 @@ modeSelect.addEventListener("input", function () {
         quantity.classList.add("hidden");
         montoLabel.textContent = "Monto";
     }
-    if (modeSelect.value == "none"){
+    if (modeSelect.value == "none") {
         comprarDiv.classList.add("hidden");
     }
 
@@ -152,6 +152,17 @@ modeSelect.addEventListener("input", function () {
 const cost = document.getElementById("cost");
 const finalSubmitButton = document.getElementById("finalSubmitButton");
 let data = {}
+
+function getTemp() {
+    if (localStorage.getItem("temp") === null) {
+        let tempData = [];
+        let temp = localStorage.setItem("temp", tempData);
+    }
+    else {
+
+    }
+}
+
 
 
 form.addEventListener("submit", async function (event) {
@@ -176,16 +187,21 @@ form.addEventListener("submit", async function (event) {
         };
     }
     pendingTransactions.push(data);
+    currentTemp = pendingTransactions;
     console.log("Transaction added to pending list:", data);
     chosenStudent.textContent = "Seleccione un nombre";
     form.reset();
 });
+
+const cargandoLabel = document.getElementById("cargandoLabel");
 
 finalSubmitButton.addEventListener("click", async function () {
     if (pendingTransactions.length === 0) {
         console.log("No transactions to submit.");
         return;
     }
+    cargandoLabel.classList.remove("hidden");
+    finalSubmitButton.classList.add("hidden");
 
     try {
         await fetch(juniorSaleAPI, {
