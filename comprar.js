@@ -152,20 +152,36 @@ modeSelect.addEventListener("input", function () {
 const cost = document.getElementById("cost");
 const finalSubmitButton = document.getElementById("finalSubmitButton");
 let data = {}
+let tempData = [];
 
-function getTemp() {
-    if (localStorage.getItem("temp") === null) {
-        let tempData = [];
-        let temp = localStorage.setItem("temp", tempData);
-    }
-    else {
 
-    }
+
+// function getTemp() {
+//     if (localStorage.getItem("temp") === null) {
+//         let temp = localStorage.setItem("temp", tempData);
+//         let parsedTemp = JSON.parse(temp);
+//         return parsedTemp;
+//     }
+//     else {
+//         let array = [];
+//         let savedData = localStorage.getItem("temp");
+//         let parsedData = JSON.parse(savedData);
+//         for (let x = 0; x < parsedData.length; x++) {
+//             array.push(parsedData[x]);
+//         }
+//         return array;
+//     }
+// }
+
+// let arraySavedData = getTemp();
+
+function isNumber(textInput) {
+    const num = Number(textInput);
+    return !isNaN(num) && num !== null && String(textInput).trim() !== "";
 }
 
 
-
-form.addEventListener("submit", async function (event) {
+form.addEventListener("submit", function (event) {
     event.preventDefault();
     const sellerID = localStorage.getItem("sellerID");
     if (modeSelect.value == "buy") {
@@ -186,11 +202,21 @@ form.addEventListener("submit", async function (event) {
             quantity: quantity.value
         };
     }
-    pendingTransactions.push(data);
-    currentTemp = pendingTransactions;
-    console.log("Transaction added to pending list:", data);
-    chosenStudent.textContent = "Seleccione un nombre";
-    form.reset();
+
+    if (data.buyer == "") {
+        alert("Tienes que escoger un nombre!");
+    }
+    if (isNumber(data.cost) == false) {
+        alert("Precio invalido!");
+    }
+    else {
+        pendingTransactions.push(data);
+        currentTemp = pendingTransactions;
+        console.log("Transaction added to pending list:", data);
+        chosenStudent.textContent = "Seleccione un nombre";
+        form.reset();
+    }
+
 });
 
 const cargandoLabel = document.getElementById("cargandoLabel");
@@ -218,7 +244,9 @@ finalSubmitButton.addEventListener("click", async function () {
         pendingTransactions = [];
         window.location.reload();
     } catch (error) {
+        cargandoLabel.classList.add("hidden");
+        finalSubmitButton.classList.remove("hidden");
         console.error("Fetch error:", error);
-        alert("An error occurred. (The specific error cannot be retrieved in no-cors mode.)");
+        alert("Un error ha ocurrido. Porfavor intente denuevo.");
     }
 });
