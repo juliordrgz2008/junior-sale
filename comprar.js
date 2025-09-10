@@ -183,6 +183,11 @@ function isNumber(textInput) {
 
 form.addEventListener("submit", function (event) {
     event.preventDefault();
+    const now = new Date();
+    const month = now.toLocaleString('en-US', { month: 'short' });
+    const day = now.getDate();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
     const sellerID = localStorage.getItem("sellerID");
     if (modeSelect.value == "buy") {
         data = {
@@ -190,7 +195,8 @@ form.addEventListener("submit", function (event) {
             buyer: buyer.value,
             item: item.value,
             cost: parseFloat(cost.value),
-            quantity: quantity.value
+            quantity: quantity.value,
+            time: `${month} ${day} ${hours}:${minutes}`
         };
     }
     if (modeSelect.value == "pay") {
@@ -199,7 +205,8 @@ form.addEventListener("submit", function (event) {
             buyer: buyer.value,
             item: "Pago",
             cost: (parseFloat(cost.value)) * -1,
-            quantity: quantity.value
+            quantity: quantity.value,
+            time: `${month} ${day} ${hours}:${minutes}`
         };
     }
 
