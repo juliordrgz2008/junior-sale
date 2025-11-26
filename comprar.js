@@ -46,6 +46,7 @@ form.reset();
 
 const tableBody = document.getElementById("tableBody");
 const searchBar = document.getElementById("searchBar");
+searchBar.value = "";
 const chosenStudent = document.getElementById("chosenStudent");
 const buyer = document.getElementById("buyer");
 
@@ -146,7 +147,6 @@ modeSelect.addEventListener("input", function () {
     if (modeSelect.value == "none") {
         comprarDiv.classList.add("hidden");
     }
-
 });
 
 const cost = document.getElementById("cost");
@@ -189,6 +189,7 @@ form.addEventListener("submit", function (event) {
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const sellerID = localStorage.getItem("sellerID");
+    
     if (modeSelect.value == "buy") {
         data = {
             sellerID: sellerID,
@@ -209,12 +210,13 @@ form.addEventListener("submit", function (event) {
             time: `${month} ${day} ${hours}:${minutes}`
         };
     }
-
     if (data.buyer == "") {
         alert("Tienes que escoger un nombre!");
+        return 0;
     }
     if (isNumber(data.cost) == false) {
         alert("Precio invalido!");
+        return 0;
     }
     else {
         pendingTransactions.push(data);
@@ -222,6 +224,9 @@ form.addEventListener("submit", function (event) {
         console.log("Transaction added to pending list:", data);
         chosenStudent.textContent = "Seleccione un nombre";
         form.reset();
+        comprarDiv.classList.add("hidden");
+        data.buyer = "";
+        searchBar.value = "";
     }
 
 });
