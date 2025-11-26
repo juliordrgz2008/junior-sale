@@ -92,6 +92,7 @@ function showJuniorSale(page, filter) {
             selectedUser = user.name;
             chosenStudent.textContent = selectedUser;
             buyer.value = selectedUser;
+            console.log(selectedUser);
         });
         nameCell.appendChild(nameLink);
         const emailCell = document.createElement("td");
@@ -225,7 +226,7 @@ form.addEventListener("submit", function (event) {
         chosenStudent.textContent = "Seleccione un nombre";
         form.reset();
         comprarDiv.classList.add("hidden");
-        data.buyer = "";
+        buyer.value = "";
         searchBar.value = "";
     }
 
