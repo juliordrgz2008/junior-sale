@@ -226,7 +226,6 @@ form.addEventListener("submit", function (event) {
         chosenStudent.textContent = "Seleccione un nombre";
         form.reset();
         comprarDiv.classList.add("hidden");
-        buyer.value = "";
         searchBar.value = "";
     }
 
