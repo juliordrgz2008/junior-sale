@@ -123,10 +123,41 @@ searchBar.addEventListener("input", function () {
 });
 
 const item = document.getElementById("item");
+const itemName = document.getElementById("itemName");
 const productoLabel = document.getElementById("productoLabel");
 const cantidadLabel = document.getElementById("cantidadLabel");
 const quantity = document.getElementById("quantity");
 const montoLabel = document.getElementById("montoLabel");
+
+prices = [3, 1, 1, 3, 3, 3, 1, 3, 3, 2, 3, 1, 2, 1];
+names = [
+"Brownies",
+"Chupi Chupi",
+"Cotufa",
+"Empanada",
+"Galletas",
+"Gomitas",
+"Ring Pop",
+"Sandwich de Helado",
+"Toston Grande",
+"Toston Pequeño",
+"5 Tequeños",
+"Jugo",
+"Nestea",
+"Refresco"]
+
+item.addEventListener("input", function(){
+    if(item.value == "custom"){
+        itemName.classList.remove("hidden");
+        cost.removeAttribute('readonly');
+    }
+    else{
+        itemName.classList.add("hidden");
+        cost.readOnly = true;
+        itemName.value = names[item.value];
+        cost.value = prices[item.value];
+    }
+});
 
 modeSelect.addEventListener("input", function () {
     if (modeSelect.value == "buy") {
@@ -195,7 +226,7 @@ form.addEventListener("submit", function (event) {
         data = {
             sellerID: sellerID,
             buyer: buyer.value,
-            item: item.value,
+            item: itemName.value,
             cost: parseFloat(cost.value),
             quantity: quantity.value,
             time: `${month} ${day} ${hours}:${minutes}`

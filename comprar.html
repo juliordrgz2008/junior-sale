@@ -48,9 +48,30 @@
                 </div>
                 <div id="comprarDiv" class="hidden lastMenu">
                     <label id="productoLabel">Producto</label>
-                    <input class="comprarInput" id="item" name="item" placeholder="Producto">
+                    <select class="comprarInput" id="item" name="item">
+                        <option>Elegir...</option>
+                            <optgroup label="Comida">
+                        <option value="0">Brownies</option>
+                        <option value="1">Chupi Chupi</option>
+                        <option value="2">Cotufa</option>
+                        <option value="3">Empanada</option>
+                        <option value="4">Galletas</option>
+                        <option value="5">Gomitas</option>
+                        <option value="6">Ring Pop</option>
+                        <option value="7">Sandwich de Helado</option>
+                        <option value="8">Toston Grande</option>
+                        <option value="9">Toston Pequeño</option>
+                        <option value="10">5 Tequeños</option>
+                            <optgroup label="Bebidas">
+                        <option value="11">Jugo</option>
+                        <option value="12">Nestea</option>
+                        <option value="13">Refresco</option>
+                            <optgroup label="Custom">
+                        <option value="custom">Personalizado</option>
+                    </select>
+                    <input class="comprarInput hidden" id="itemName" value="" name="item" placeholder="Nombre del Producto">
                     <label id="montoLabel">Precio</label>
-                    <input class="comprarInput" id="cost" name="cost" placeholder="Precio" type="text">
+                    <input class="comprarInput" id="cost" name="cost" placeholder="Precio" type="text" readonly="true">
                     <label id="cantidadLabel">Cantidad</label>
                     <input class="comprarInput" type="number" id="quantity" name="quantity" min="1" value="1">
                     <input class="comprarInput" type="submit" id="comprarButton" value="Comprar">
