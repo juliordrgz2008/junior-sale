@@ -171,6 +171,7 @@ modeSelect.addEventListener("input", function () {
         montoLabel.textContent = "Precio";
     }
     if (modeSelect.value == "pay") {
+        cost.readOnly = false;
         comprarDiv.classList.remove("hidden");
         item.classList.add("hidden");
         productoLabel.classList.add("hidden");
