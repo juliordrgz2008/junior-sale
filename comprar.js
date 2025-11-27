@@ -162,6 +162,7 @@ item.addEventListener("input", function(){
 });
 
 modeSelect.addEventListener("input", function () {
+    console.log(modeSelect.value);
     if (modeSelect.value == "buy") {
         comprarDiv.classList.remove("hidden");
         item.classList.remove("hidden");
