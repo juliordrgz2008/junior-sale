@@ -15,6 +15,14 @@ let allUsers = {
 
 let pendingTransactions = [];
 
+const item = document.getElementById("item");
+const itemName = document.getElementById("itemName");
+const productoLabel = document.getElementById("productoLabel");
+const cantidadLabel = document.getElementById("cantidadLabel");
+const quantity = document.getElementById("quantity");
+const montoLabel = document.getElementById("montoLabel");
+
+
 async function getJuniorSale() {
     const response = await fetch(juniorSaleAPI);
     const data = await response.json();
@@ -37,6 +45,20 @@ async function getJuniorSale() {
     }
     console.log("Data gotten!");
     showJuniorSale(1);
+
+    item.addEventListener("input", function(){
+    if(item.value == "custom"){
+        itemName.classList.remove("hidden");
+        cost.removeAttribute('readonly');
+    }
+    else{
+        itemName.classList.add("hidden");
+        cost.readOnly = true;
+        itemName.value = names[item.value];
+        cost.value = prices[item.value];
+    }
+});
+
 }
 
 getJuniorSale();
@@ -122,12 +144,6 @@ searchBar.addEventListener("input", function () {
     }
 });
 
-const item = document.getElementById("item");
-const itemName = document.getElementById("itemName");
-const productoLabel = document.getElementById("productoLabel");
-const cantidadLabel = document.getElementById("cantidadLabel");
-const quantity = document.getElementById("quantity");
-const montoLabel = document.getElementById("montoLabel");
 
 prices = [3, 1, 1, 3, 3, 3, 1, 3, 3, 2, 3, 1, 2, 1];
 names = [
@@ -146,18 +162,6 @@ names = [
 "Nestea",
 "Refresco"]
 
-item.addEventListener("input", function(){
-    if(item.value == "custom"){
-        itemName.classList.remove("hidden");
-        cost.removeAttribute('readonly');
-    }
-    else{
-        itemName.classList.add("hidden");
-        cost.readOnly = true;
-        itemName.value = names[item.value];
-        cost.value = prices[item.value];
-    }
-});
 
 modeSelect.addEventListener("input", function () {
     if (modeSelect.value == "buy") {
