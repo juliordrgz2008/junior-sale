@@ -129,26 +129,26 @@ const cantidadLabel = document.getElementById("cantidadLabel");
 const quantity = document.getElementById("quantity");
 const montoLabel = document.getElementById("montoLabel");
 
-prices = [3, 1, 1, 3, 3, 3, 1, 3, 3, 2, 3, 1, 2, 1];
-names = [
-"Brownies",
-"Chupi Chupi",
-"Cotufa",
-"Empanada",
-"Galletas",
-"Gomitas",
-"Ring Pop",
-"Sandwich de Helado",
-"Toston Grande",
-"Toston Pequeño",
-"5 Tequeños",
-"Jugo",
-"Nestea",
-"Refresco"]
 
+
+const menuItems = [
+    ["Brownie/Brookie", 3],
+    ["Chupi Chupi", 1],
+    ["Cotufa", 1],
+    ["Empanada", 3],
+    ["Galleta", 3],
+    ["Gomitas", 3],
+    ["Polvorosas", 2],
+    ["Ring Pop", 1],
+    ["Sandwich de Helado", 3],
+    ["Toston Grande", 3],
+    ["Toston Pequeño", 2],
+    ["5 Tequeños", 3],
+    ["Jugo", 1],
+    ["Nestea", 2],
+    ["Refresco", 1]
+];
 item.addEventListener("input", function(){
-    console.log("input!");
-    console.log(prices[item.value]);
     if(item.value == "custom"){
         itemName.classList.remove("hidden");
         cost.removeAttribute('readonly');
@@ -156,9 +156,12 @@ item.addEventListener("input", function(){
     else{
         itemName.classList.add("hidden");
         cost.readOnly = true;
-        itemName.value = names[item.value];
-        cost.value = prices[item.value];
+        itemName.value = menuItems[item.value][0];
+        cost.value = menuItems[item.value][1];
+        console.log(menuItems[item.value][0]);
+        console.log(menuItems[item.value][1]);
     }
+    console.log("input!");
 });
 
 modeSelect.addEventListener("input", function () {
