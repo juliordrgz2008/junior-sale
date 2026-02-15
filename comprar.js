@@ -130,7 +130,7 @@ const montoLabel = document.getElementById("montoLabel");
 
 
 
-const menuItems = [
+const foodItems = [
     ["Brownie/Brookie", 3],
     ["Cachito", 3],
     ["Chupi Chupi", 1],
@@ -143,21 +143,53 @@ const menuItems = [
     ["Sandwich de Helado", 3],
     ["Toston Grande", 3],
     ["Toston Pequeño", 2],
-    ["5 Tequeños", 3],
+    ["5 Tequeños", 3]
+];
+
+const drinkItems = [
     ["Jugo", 1],
     ["Nestea", 2],
     ["Refresco", 1]
-];
+]
+
+const comidaGroup = document.getElementById("comidaGroup");
+const bebidaGroup = document.getElementById("bebidaGroup");
+const customGroup = document.getElementById("customGroup");
+
+for (let item = 0; item < foodItems.length; item++) {
+    const option = document.createElement("option");
+    option.innerText = foodItems[item][0];
+    comidaGroup.appendChild(option);
+}
+
+for (let item = 0; item < drinkItems.length; item++) {
+    const option = document.createElement("option");
+    option.innerText = drinkItems[item][0];
+    bebidaGroup.appendChild(option);
+}
+
 item.addEventListener("input", function () {
     if (item.value == "custom") {
         itemName.classList.remove("hidden");
         cost.removeAttribute('readonly');
     }
     else {
-        itemName.classList.add("hidden");
-        cost.readOnly = true;
-        itemName.value = menuItems[item.value][0];
-        cost.value = menuItems[item.value][1];
+        for (let x = 0; x < foodItems.length; x++) {
+            const isInFood = foodItems[x].indexOf(item.value);
+            if (isInFood > -1) {
+                itemName.classList.add("hidden");
+                itemName.value = foodItems[x][0];
+                cost.value = foodItems[x][1];
+            }
+        }
+        for (let x = 0; x < drinkItems.length; x++) {
+            const isInDrinks = drinkItems[x].indexOf(item.value);
+            if (isInDrinks > -1) {
+                itemName.classList.add("hidden");
+                itemName.value = drinkItems[x][0];
+                cost.value = drinkItems[x][1];
+            }
+        }
     }
 });
 
@@ -226,37 +258,91 @@ function updateHistory() {
         let newQuantity = pendingTransactions[objects].quantity;
 
         const newRow = document.createElement("tr");
-        newRow.id = objects;
         const newBuyerCell = document.createElement("td");
         const newItemCell = document.createElement("td");
         const newCostCell = document.createElement("td");
         const newQuantityCell = document.createElement("td");
         const newButtonCell = document.createElement("td");
         const newButton = document.createElement("button");
+
+        const newItemEditor = document.createElement("select");
+        const newFoodGroup = document.createElement("optgroup");
+        const newDrinkGroup = document.createElement("optgroup");
+
+        newFoodGroup.label = "Comida";
+        newDrinkGroup.label = "Bebidas";
+
+        newItemEditor.appendChild(newFoodGroup);
+        newItemEditor.appendChild(newDrinkGroup);
+
+        for (let item = 0; item < foodItems.length; item++) {
+            const option = document.createElement("option");
+            option.innerText = foodItems[item][0];
+            newFoodGroup.appendChild(option);
+        }
+        for (let item = 0; item < drinkItems.length; item++) {
+            const option = document.createElement("option");
+            option.innerText = drinkItems[item][0];
+            newDrinkGroup.appendChild(option);
+        }
+
+
+
+        const newQuantityEditor = document.createElement("input");
+
+        newQuantityEditor.type = "number";
+        newQuantityEditor.min = 1;
+
+        newItemEditor.value = newItem;
+        newQuantityEditor.value = newQuantity;
+
+        newRow.id = objects;
         newButton.id = objects;
+
+        newBuyerCell.innerText = newBuyer;
+        newCostCell.innerText = newCost;
 
         newButton.type = "button";
         newButton.style = "border: 0;";
         newButton.innerHTML = `<img id="trash" src="trash.png" style="border: 0; width:40%;">`;
 
-        newButton.addEventListener("click", function(){
+        newItemEditor.addEventListener("input", function () {
+            pendingTransactions[objects].item = newItemEditor.value;
+            for (let x = 0; x < foodItems.length; x++) {
+                if (foodItems[x].indexOf(newItemEditor.value) > -1) {
+                    pendingTransactions[objects].cost = foodItems[x][1];
+                    newCostCell.innerText = foodItems[x][1];
+                }
+            }
+            for (let x = 0; x < drinkItems.length; x++) {
+                if (drinkItems[x].indexOf(newItemEditor.value) > -1) {
+                    pendingTransactions[objects].cost = drinkItems[x][1];
+                    newCostCell.innerText = drinkItems[x][1];
+                }
+
+            }
+        });
+
+        newQuantityEditor.addEventListener("input", function () {
+            pendingTransactions[objects].quantity = newQuantityEditor.value;
+        })
+
+        newButton.addEventListener("click", function () {
             pendingTransactions.splice(newButton.id, 1);
             console.log(pendingTransactions);
             updateHistory()
         });
-        
-        newBuyerCell.innerText = newBuyer;
-        newItemCell.innerText = newItem;
-        newCostCell.innerText = newCost;
-        newQuantityCell.innerText = newQuantity;
-        
+
+
+        newItemCell.appendChild(newItemEditor);
+        newQuantityCell.appendChild(newQuantityEditor);
         newButtonCell.appendChild(newButton);
         newRow.appendChild(newBuyerCell);
         newRow.appendChild(newItemCell);
         newRow.appendChild(newCostCell);
         newRow.appendChild(newQuantityCell);
         newRow.appendChild(newButtonCell);
-        
+
 
         transDisplayBody.appendChild(newRow);
 
