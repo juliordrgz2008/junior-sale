@@ -92,7 +92,6 @@ function showJuniorSale(page, filter) {
             selectedUser = user.name;
             chosenStudent.textContent = selectedUser;
             buyer.value = selectedUser;
-            console.log(selectedUser);
         });
         nameCell.appendChild(nameLink);
         const emailCell = document.createElement("td");
@@ -133,6 +132,7 @@ const montoLabel = document.getElementById("montoLabel");
 
 const menuItems = [
     ["Brownie/Brookie", 3],
+    ["Cachito", 3],
     ["Chupi Chupi", 1],
     ["Cotufa", 1],
     ["Empanada", 3],
@@ -148,24 +148,20 @@ const menuItems = [
     ["Nestea", 2],
     ["Refresco", 1]
 ];
-item.addEventListener("input", function(){
-    if(item.value == "custom"){
+item.addEventListener("input", function () {
+    if (item.value == "custom") {
         itemName.classList.remove("hidden");
         cost.removeAttribute('readonly');
     }
-    else{
+    else {
         itemName.classList.add("hidden");
         cost.readOnly = true;
         itemName.value = menuItems[item.value][0];
         cost.value = menuItems[item.value][1];
-        console.log(menuItems[item.value][0]);
-        console.log(menuItems[item.value][1]);
     }
-    console.log("input!");
 });
 
 modeSelect.addEventListener("input", function () {
-    console.log(modeSelect.value);
     if (modeSelect.value == "buy") {
         comprarDiv.classList.remove("hidden");
         item.classList.remove("hidden");
@@ -219,6 +215,57 @@ function isNumber(textInput) {
     return !isNaN(num) && num !== null && String(textInput).trim() !== "";
 }
 
+const transDisplayBody = document.getElementById("transDisplayBody");
+
+function updateHistory() {
+    transDisplayBody.innerHTML = "";
+    for (let objects = 0; objects < pendingTransactions.length; objects++) {
+        let newBuyer = pendingTransactions[objects].buyer;
+        let newItem = pendingTransactions[objects].item;
+        let newCost = pendingTransactions[objects].cost;
+        let newQuantity = pendingTransactions[objects].quantity;
+
+        const newRow = document.createElement("tr");
+        newRow.id = objects;
+        const newBuyerCell = document.createElement("td");
+        const newItemCell = document.createElement("td");
+        const newCostCell = document.createElement("td");
+        const newQuantityCell = document.createElement("td");
+        const newButtonCell = document.createElement("td");
+        const newButton = document.createElement("button");
+        newButton.id = objects;
+
+        newButton.type = "button";
+        newButton.style = "border: 0;";
+        newButton.innerHTML = `<img id="trash" src="trash.png" style="border: 0; width:40%;">`;
+
+        newButton.addEventListener("click", function(){
+            pendingTransactions.splice(newButton.id, 1);
+            console.log(pendingTransactions);
+            updateHistory()
+        });
+        
+        newBuyerCell.innerText = newBuyer;
+        newItemCell.innerText = newItem;
+        newCostCell.innerText = newCost;
+        newQuantityCell.innerText = newQuantity;
+        
+        newButtonCell.appendChild(newButton);
+        newRow.appendChild(newBuyerCell);
+        newRow.appendChild(newItemCell);
+        newRow.appendChild(newCostCell);
+        newRow.appendChild(newQuantityCell);
+        newRow.appendChild(newButtonCell);
+        
+
+        transDisplayBody.appendChild(newRow);
+
+
+
+
+    }
+
+}
 
 form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -228,7 +275,7 @@ form.addEventListener("submit", function (event) {
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const sellerID = localStorage.getItem("sellerID");
-    
+
     if (modeSelect.value == "buy") {
         data = {
             sellerID: sellerID,
@@ -259,12 +306,12 @@ form.addEventListener("submit", function (event) {
     }
     else {
         pendingTransactions.push(data);
-        currentTemp = pendingTransactions;
         console.log("Transaction added to pending list:", data);
         chosenStudent.textContent = "Seleccione un nombre";
         form.reset();
         comprarDiv.classList.add("hidden");
         searchBar.value = "";
+        updateHistory();
     }
 
 });
