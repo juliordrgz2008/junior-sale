@@ -292,8 +292,10 @@ function updateHistory() {
 
         newQuantityEditor.type = "number";
         newQuantityEditor.min = 1;
+        newQuantityEditor.classList.add("quantityEditor");
 
         newItemEditor.value = newItem;
+        newItemEditor.classList.add("itemEditor");
         newQuantityEditor.value = newQuantity;
 
         newRow.id = objects;
