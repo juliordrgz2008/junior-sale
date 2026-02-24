@@ -136,6 +136,7 @@ const foodItems = [
     ["Chupi Chupi", 1],
     ["Cotufa", 1],
     ["Cotufa Acaramelada", 3],
+    ["Dona", 3],
     ["Empanada", 3],
     ["Galleta", 3],
     ["Gomitas", 3],
