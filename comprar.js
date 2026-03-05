@@ -141,6 +141,7 @@ const foodItems = [
     ["Galleta", 3],
     ["Gomitas", 3],
     ["Papas Piter", 2],
+    ["Pirulin", 1],    
     ["Polvorosas", 2],
     ["Ring Pop", 1],
     ["Sandwich de Helado", 3],
