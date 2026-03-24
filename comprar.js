@@ -134,6 +134,7 @@ const foodItems = [
     ["Brownie/Brookie", 3],
     ["Cachito", 3],
     ["Chupi Chupi", 1],
+    ["Cocosete", 2],
     ["Cotufa", 1],
     ["Cotufa Acaramelada", 3],
     ["Dona", 3],
@@ -141,7 +142,7 @@ const foodItems = [
     ["Galleta", 3],
     ["Gomitas", 3],
     ["Papas Piter", 2],
-    ["Pirulin", 1],    
+    ["Pirulin", 1],
     ["Polvorosas", 2],
     ["Ring Pop", 1],
     ["Sandwich de Helado", 3],
@@ -352,11 +353,13 @@ function updateHistory() {
 
         transDisplayBody.appendChild(newRow);
 
-
-
-
     }
+}
 
+const sellerID = localStorage.getItem("sellerID");
+if (sellerID == null) {
+    window.alert("La sesión ha expirado. Porfavor inicie sesion nuevamente.")
+    window.location.href = "index.html";
 }
 
 form.addEventListener("submit", function (event) {
@@ -366,7 +369,6 @@ form.addEventListener("submit", function (event) {
     const day = now.getDate();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    const sellerID = localStorage.getItem("sellerID");
 
     if (modeSelect.value == "buy") {
         data = {

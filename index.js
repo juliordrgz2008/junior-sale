@@ -7,6 +7,7 @@ function removeWhite(cell) {
 let passwordList = [];
 let passwordToday = [];
 let password = ""
+localStorage.removeItem("sellerID");
 
 async function inialization() {
     const response = await fetch(googleAPI);
