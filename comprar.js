@@ -148,7 +148,6 @@ const foodItems = [
     ["Sandwich de Helado", 3],
     ["Toston Grande", 3],
     ["Toston Pequeño", 2],
-    ["5 Tequeños", 3]
 ];
 
 const drinkItems = [
