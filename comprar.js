@@ -132,6 +132,7 @@ const montoLabel = document.getElementById("montoLabel");
 
 const foodItems = [
     ["Brownie/Brookie", 3],
+    ["Brownie Chiquito", 1],
     ["Cachito", 3],
     ["Chupi Chupi", 1],
     ["Cocosete", 2],
@@ -163,7 +164,8 @@ const foodItems = [
 
 const drinkItems = [
     ["Jugo", 1],
-    ["Nestea", 2],
+    ["Nestea", 1],
+    ["Yolo", 3],
     ["Refresco", 1]
 ]
 
