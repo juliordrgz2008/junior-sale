@@ -137,7 +137,6 @@ const foodItems = [
     ["Chupi Chupi", 1],
     ["Cocosete", 2],
     ["Cotufa", 1],
-
     ["Corneto Clasico", 4],
     ["Corneto Vasito Jazz", 2.5],
     ["Magnum Almendras", 4],
@@ -148,10 +147,11 @@ const foodItems = [
     ["Helado Nucita", 2],
     ["Bati Bati", 1.5],
     ["Merengada Vasito", 2],
-
     ["Dona", 3.5],
     ["Empanada", 3],
+    ["Sandwitch", 3],    
     ["Galleta", 3],
+    ["Galleta Renatta", 3],
     ["Gomitas", 3],
     ["Papas Piter", 2],
     ["Pirulin", 1],
@@ -164,8 +164,11 @@ const foodItems = [
 
 const drinkItems = [
     ["Jugo", 1],
+    ["Agua Saborizada", 1],
     ["Nestea", 1],
     ["Yolo", 3],
+    ["Yolo Fit", 5.5],
+    ["Refresco de Lata", 2],
     ["Refresco", 1]
 ]
 
