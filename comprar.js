@@ -150,6 +150,7 @@ const foodItems = [
     ["Dona", 3.5],
     ["Empanada", 3],
     ["Sandwitch", 3],    
+    ["Samba", 3],    
     ["Galleta", 3],
     ["Galleta Renatta", 3],
     ["Gomitas", 3],
@@ -158,12 +159,18 @@ const foodItems = [
     ["Polvorosas", 2],
     ["Ring Pop", 1],
     ["Tequeñon", 1],
+    ["Torta", 3],
     ["Toston Grande", 3],
     ["Toston Pequeño", 2],
 ];
 
+// for (x in foodItems){
+    
+// }
+
 const drinkItems = [
     ["Jugo", 1],
+    ["Agua", 1],
     ["Agua Saborizada", 1],
     ["Nestea", 1],
     ["Yolo", 3],
