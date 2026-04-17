@@ -158,7 +158,7 @@ const foodItems = [
     ["Pirulin", 1],
     ["Polvorosas", 2],
     ["Ring Pop", 1],
-    ["Tequeñon", 1],
+    ["Tequeños", 1],
     ["Torta", 3],
     ["Toston Grande", 3],
     ["Toston Pequeño", 2],
