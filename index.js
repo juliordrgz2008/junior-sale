@@ -25,8 +25,6 @@ async function inialization() {
     }
     passwordList = passwordList.filter(x => x !== "");
     passwordToday = passwordToday.filter(x => x !== "");
-
-    console.log("done!");
     password = passwordToday[0];
 }
 document.addEventListener('DOMContentLoaded', inialization);
@@ -34,6 +32,7 @@ document.addEventListener('DOMContentLoaded', inialization);
 
 const loginButton = document.getElementById("loginButton");
 const form = document.getElementById("loginForm");
+const warning = document.getElementById("warning");
 
 function getPassword(adminPass) {
     if (adminPass == "ENDRHDWT57") {
@@ -53,6 +52,20 @@ form.addEventListener("submit", function (event) {
     if (passwordUser == password) {
         // console.log(localStorage.getItem("sellerID"));
         window.location = "comprar.html";
+    }
+    else{
+        warning.hidden = false;
+        function hideWarning(){
+            warning.hidden = true
+
+        }
+        if (warning.hidden == false){
+            setTimeout(() => console.log("1"), 1000);     
+            setTimeout(() => console.log("2"), 2000);     
+            setTimeout(() => console.log("3"), 3000);     
+            setTimeout(() => console.log("4"), 4000);     
+            setTimeout(() => hideWarning(), 5000);     
+        }
     }
 });
 

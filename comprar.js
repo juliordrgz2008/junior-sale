@@ -1,4 +1,4 @@
-const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec";
+const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec?";
 
 
 const modeSelect = document.getElementById("modeSelect");
@@ -8,7 +8,7 @@ const comprarDiv = document.getElementById("comprarDiv");
 
 let allUsers = {
     names: [],
-    emails: [],
+    bolivares: [],
     grade: [],
     balance: []
 };
@@ -30,7 +30,7 @@ async function getJuniorSale() {
             const columnE = row[4];
 
             allUsers.names.push(columnB);
-            allUsers.emails.push(columnC);
+            allUsers.bolivares.push(columnC);
             allUsers.grade.push(columnD);
             allUsers.balance.push(columnE);
         });
@@ -61,7 +61,7 @@ function showJuniorSale(page, filter) {
             if (allUsers.names[i].toLowerCase().startsWith(filterValue)) {
                 usersToShow.push({
                     name: allUsers.names[i],
-                    email: allUsers.emails[i],
+                    bolivares: allUsers.bolivares[i],
                     grade: allUsers.grade[i],
                     balance: allUsers.balance[i],
                 });
@@ -71,7 +71,7 @@ function showJuniorSale(page, filter) {
         for (let i = 0; i < allUsers.names.length; i++) {
             usersToShow.push({
                 name: allUsers.names[i],
-                email: allUsers.emails[i],
+                bolivares: allUsers.bolivares[i],
                 grade: allUsers.grade[i],
                 balance: allUsers.balance[i],
             });
@@ -82,7 +82,7 @@ function showJuniorSale(page, filter) {
     const usersOnPage = usersToShow.slice(startIndex, endIndex);
     usersOnPage.forEach(user => {
         const newRow = document.createElement("tr");
-        newRow.setAttribute("data-email", user.email);
+        newRow.setAttribute("data-bolivares", user.bolivares);
         const nameCell = document.createElement("td");
         const nameLink = document.createElement("a");
         nameLink.textContent = user.name;
@@ -94,14 +94,14 @@ function showJuniorSale(page, filter) {
             buyer.value = selectedUser;
         });
         nameCell.appendChild(nameLink);
-        const emailCell = document.createElement("td");
-        emailCell.textContent = user.email;
+        const bolivaresCell = document.createElement("td");
+        bolivaresCell.textContent = user.bolivares;
         const gradeCell = document.createElement("td");
         gradeCell.textContent = user.grade;
         const balanceCell = document.createElement("td");
         balanceCell.textContent = user.balance;
         newRow.appendChild(nameCell);
-        newRow.appendChild(emailCell);
+        newRow.appendChild(bolivaresCell);
         newRow.appendChild(gradeCell);
         newRow.appendChild(balanceCell);
         tableBody.appendChild(newRow);
@@ -127,9 +127,6 @@ const productoLabel = document.getElementById("productoLabel");
 const cantidadLabel = document.getElementById("cantidadLabel");
 const quantity = document.getElementById("quantity");
 const montoLabel = document.getElementById("montoLabel");
-
-
-
 const foodItems = [
     ["Brownie/Brookie", 3],
     ["Brownie Chiquito", 1],

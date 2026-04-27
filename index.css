@@ -9,10 +9,64 @@
     text-align: center;
 }
 
+.itemDisplay {
+    flex: 1;               /* Forces all boxes to be the exact same width */
+    display: flex;
+    flex-direction: row; /* Stacks image -> text -> buttons vertically */
+    align-items: center;    /* Centers everything horizontally */
+    justify-content: space-between; /* Pushes buttons to the bottom of the box */
+    
+    background-color: whitesmoke;
+    padding: 20px;
+    border-radius: 8px;
+    box-sizing: border-box; /* Crucial so padding doesn't break the equal width */
+    text-align: center;
+}
+
+.itemDisplay img {
+    max-width: 150px;       /* Match the width from your HTML */
+    height: 150px;          /* Match the height from your HTML */
+    object-fit: contain;    /* Prevents the ice cream bars from looking squashed */
+    margin-bottom: 10px;
+}
+
+.flex{
+    display: flex;
+}
+
+.visibilityHidden{
+    visibility: hidden;
+}
+
+.vCenter{
+    align-items: center;
+}
+
+.hCenter{
+    justify-content: center;
+}
+
+.quantityButton{
+    padding: 0;
+    width: 30px;
+    aspect-ratio: 1 / 1;
+    background-color: none;
+    border-style:solid;
+    border-width: 1px;
+    box-sizing: border-box;
+
+}
+
+.tempStorageButton{
+    text-align: center;
+    color: white;
+    font-size: 120%;
+}
+
 .headerDiv {
-    margin: 0;
     color: white;
     background-color: rgb(18, 3, 72);
+    padding-bottom: 2%;
 }
 
 .columnDivision{
@@ -28,6 +82,11 @@
     border-radius: 24px;
     width: 50%;
     text-align: center;
+}
+
+.flexColumn{
+    display: flex;
+    flex-direction: column;
 }
 
 .flexCenterColumn{
@@ -68,10 +127,14 @@
 
 .mainDivSub {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: nowrap;     /* Forces all 4 items to stay in one line */
+    align-items: stretch;  /* Makes all boxes the same height regardless of content */
     justify-content: center;
+    gap: 15px;             /* Adds space between the boxes */
     margin-top: 1em;
     margin-bottom: 1em;
+    width: 100%;           /* Ensures it uses the available horizontal space */
 }
 
 .actionDiv {
@@ -113,8 +176,9 @@
     padding-right: 4%;
     padding-top: 2%;
     padding-bottom: 2%;
-    border-radius: 24px;
+    border-radius: 8px;
     border-style: none;
+    font-weight:700;
     font-size: 100%;
     background-color: #2b2296;
     color: white;
