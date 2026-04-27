@@ -1,125 +1,101 @@
-const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec?";
-
-
-const modeSelect = document.getElementById("modeSelect");
-const comprarDiv = document.getElementById("comprarDiv");
-
-
-
-let allUsers = {
-    names: [],
-    bolivares: [],
-    grade: [],
-    balance: []
-};
-
-let pendingTransactions = [];
-
-async function getJuniorSale() {
-    const response = await fetch(juniorSaleAPI);
-    const data = await response.json();
-
-    const cellData = data.cellData;
-
-    if (cellData && cellData.length > 0) {
-        cellData.forEach((row) => {
-
-            const columnB = row[1];
-            const columnC = row[2];
-            const columnD = row[3];
-            const columnE = row[4];
-
-            allUsers.names.push(columnB);
-            allUsers.bolivares.push(columnC);
-            allUsers.grade.push(columnD);
-            allUsers.balance.push(columnE);
-        });
-    }
-    console.log("Data gotten!");
-    showJuniorSale(1);
-}
-
-getJuniorSale();
-
-const form = document.getElementById("form");
-form.reset();
-
+// Configuración Inicial
+const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec"; // Asegúrate de poner tu URL actual
 const tableBody = document.getElementById("tableBody");
 const searchBar = document.getElementById("searchBar");
-searchBar.value = "";
 const chosenStudent = document.getElementById("chosenStudent");
 const buyer = document.getElementById("buyer");
+const pageSelector = document.getElementById("pageSelector");
 
+let allUsers = { names: [], grades: [], balances: [], bolivares: [] };
 let selectedUser = null;
 
-function showJuniorSale(page, filter) {
+// 1. Obtener Datos
+async function getJuniorSale() {
+    try {
+        const response = await fetch(juniorSaleAPI);
+        const data = await response.json();
+        const cellData = data.cellData;
+
+        if (cellData && cellData.length > 0) {
+            allUsers.names = [];
+            allUsers.grades = [];
+            allUsers.balances = [];
+            allUsers.bolivares = [];
+
+            cellData.forEach((row) => {
+                // El orden que viene del backend es: [Name, Grade, Balance, Bolivares]
+                allUsers.names.push(row[0]);
+                allUsers.grades.push(row[1]);
+                allUsers.balances.push(row[2]);
+                allUsers.bolivares.push(row[3]);
+            });
+        }
+        showJuniorSale(1);
+    } catch (error) {
+        console.error("Error cargando datos:", error);
+    }
+}
+
+// 2. Mostrar Tabla
+function showJuniorSale(page, filter = false) {
     tableBody.innerHTML = '';
     let usersToShow = [];
-    if (filter) {
-        const filterValue = searchBar.value.toLowerCase();
-        for (let i = 0; i < allUsers.names.length; i++) {
-            if (allUsers.names[i].toLowerCase().startsWith(filterValue)) {
-                usersToShow.push({
-                    name: allUsers.names[i],
-                    bolivares: allUsers.bolivares[i],
-                    grade: allUsers.grade[i],
-                    balance: allUsers.balance[i],
-                });
-            }
-        }
-    } else {
-        for (let i = 0; i < allUsers.names.length; i++) {
+    const filterValue = searchBar.value.toLowerCase();
+
+    for (let i = 0; i < allUsers.names.length; i++) {
+        if (!filter || allUsers.names[i].toLowerCase().startsWith(filterValue)) {
             usersToShow.push({
                 name: allUsers.names[i],
-                bolivares: allUsers.bolivares[i],
-                grade: allUsers.grade[i],
-                balance: allUsers.balance[i],
+                grade: allUsers.grades[i],
+                balance: allUsers.balances[i],
+                bolivares: allUsers.bolivares[i]
             });
         }
     }
+
     const startIndex = (page - 1) * 25;
-    const endIndex = startIndex + 25;
-    const usersOnPage = usersToShow.slice(startIndex, endIndex);
+    const usersOnPage = usersToShow.slice(startIndex, startIndex + 25);
+
     usersOnPage.forEach(user => {
         const newRow = document.createElement("tr");
-        newRow.setAttribute("data-bolivares", user.bolivares);
+
+        // Columna Nombre
         const nameCell = document.createElement("td");
         const nameLink = document.createElement("a");
         nameLink.textContent = user.name;
         nameLink.href = "#";
-        nameLink.addEventListener("click", function (event) {
-            event.preventDefault();
+        nameLink.onclick = (e) => {
+            e.preventDefault();
             selectedUser = user.name;
             chosenStudent.textContent = selectedUser;
             buyer.value = selectedUser;
-        });
+        };
         nameCell.appendChild(nameLink);
-        const bolivaresCell = document.createElement("td");
-        bolivaresCell.textContent = user.bolivares;
+
+        // Columna Grade
         const gradeCell = document.createElement("td");
         gradeCell.textContent = user.grade;
+
+        // Columna Balance
         const balanceCell = document.createElement("td");
         balanceCell.textContent = user.balance;
-        newRow.appendChild(nameCell);
-        newRow.appendChild(bolivaresCell);
-        newRow.appendChild(gradeCell);
-        newRow.appendChild(balanceCell);
+
+        // Columna Bolivares
+        const bolivaresCell = document.createElement("td");
+        bolivaresCell.textContent = user.bolivares;
+
+        // Agregar en orden: Name | Grade | Balance | Bolivares
+        newRow.append(nameCell, gradeCell, balanceCell, bolivaresCell);
         tableBody.appendChild(newRow);
     });
 }
-const pageSelector = document.getElementById("pageSelector");
-pageSelector.addEventListener("input", function () {
-    showJuniorSale(pageSelector.value);
-});
-searchBar.addEventListener("input", function () {
-    let filterValue = searchBar.value;
-    if (filterValue !== "") {
-        showJuniorSale(1, true);
-    }
-    if (filterValue == "") {
-        showJuniorSale(1, false);
-    }
-});
+
+// Iniciar carga
+getJuniorSale();
+
+// Eventos de búsqueda y página
+pageSelector.addEventListener("input", () => showJuniorSale(pageSelector.value, searchBar.value !== ""));
+searchBar.addEventListener("input", () => showJuniorSale(1, searchBar.value !== ""));
 
 const item = document.getElementById("item");
 const itemName = document.getElementById("itemName");
