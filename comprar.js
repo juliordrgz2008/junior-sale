@@ -130,14 +130,14 @@ item.addEventListener("input", function () {
     } else {
         itemName.classList.add("hidden");
         cost.readOnly = true;
-
         const selectedId = Number(item.value);
-
         const index = inventory.id.indexOf(selectedId);
-
+        
         if (index !== -1) {
             itemName.value = inventory.name[index];
             cost.value = inventory.cost[index];
+            quantity.max = inventory.quantity[index];
+
         }
     }
 });
@@ -238,15 +238,15 @@ finalSubmitButton.addEventListener("click", async function () {
     cargandoLabel.classList.remove("hidden");
     finalSubmitButton.classList.add("hidden");
     inventoryUpdater.forEach(f => {
-        for (let x = 0; x<inventory.id.length; x++){
-            if (f.id == inventory.id[x]){
+        for (let x = 0; x < inventory.id.length; x++) {
+            if (f.id == inventory.id[x]) {
                 inventory.quantity[x] -= f.quantity;
                 console.log(inventory.quantity);
                 break;
             }
         }
     });
-    
+
     try {
         await fetch(juniorSaleAPI, {
             method: 'POST',
