@@ -76,7 +76,15 @@ function displayItems() {
     const debouncedSave = debounce(saveChanges, 3000)
 
     function saveChanges() {
-        console.log('Here');
+        fetch(url + "?action=updateQuantity", {
+            mode: "no-cors",
+            headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            body: JSON.stringify({ changes: changes }),
+        })
+            .then(response => console.log('Sheet updated!'))
+            .catch(error => console.error('Error!', error.message));
+        changes.length = 0;
     }
 
     inventory.forEach((item) => {
@@ -98,7 +106,7 @@ function displayItems() {
                 <p style="margin: 0;">$${item.cost}</p>
                 <div style="gap: 3%; text-align: center; justify-content: space-around;" class="itemDisplay">
                     <button id="addButton${item.id}" class="quantityButton">+</button>
-                    <input value="${item.quantity}" id="qtyDisplay${item.id}" class="quantitySelector" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                    <input value="${item.quantity}" id="qtyDisplay${item.id}" class="quantitySelector" type="number" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                     <button id="subButton${item.id}" class="quantityButton">-</button>
                 </div>
             </div>
@@ -110,23 +118,12 @@ function displayItems() {
             const addButton = document.getElementById(`addButton${item.id}`);
             const subButton = document.getElementById(`subButton${item.id}`);
             const qtyDisplay = document.getElementById(`qtyDisplay${item.id}`);
-            function updateQuantity() {
-                qtyDisplay.value = item.quantity;
-                fetch(url + "?action=updateQuantity", {
-                    mode: "no-cors",
-                    headers: { 'Content-Type': 'application/json' },
-                    method: 'POST',
-                    body: JSON.stringify({ id: item.id, quantity: item.quantity }),
-                })
-                    .then(response => console.log('Sheet updated!'))
-                    .catch(error => console.error('Error!', error.message));
-            }
 
             function change(quantity) {
 
                 let x = changes.findIndex(c => c.id === item.id)
                 if (x !== -1) {
-                    changes[x].quantity = Number(changes[x].quantity) + Number(quantity);
+                    changes[x].quantity = Number(quantity);
                     qtyDisplay.value = changes[x].quantity;
                 }
                 else {
@@ -134,9 +131,8 @@ function displayItems() {
                     changes.push(changeEntry);
                     qtyDisplay.value = changeEntry.quantity;
                     console.log(changes);
-                    debouncedSave();
                 }
-
+                debouncedSave();
             }
 
             qtyDisplay.addEventListener("input", function () {
@@ -144,11 +140,11 @@ function displayItems() {
             })
 
             addButton.addEventListener("click", function () {
-                change(1);
+                change(Number(qtyDisplay.value) + 1);
             });
 
             subButton.addEventListener("click", function () {
-                change(-1);
+                change(Number(qtyDisplay.value) - 1);
             });
         }
     });
