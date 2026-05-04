@@ -14,6 +14,16 @@ const element = {
 
 }
 
+
+function debounce(func, timeout) {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
+
+
 async function getJuniorSale() {
     const response = await fetch(juniorSaleAPI);
     const data = await response.json();
@@ -28,6 +38,8 @@ async function getJuniorSale() {
         temp.cost = cellData[row][2];
         temp.quantity = cellData[row][3];
         temp.photo = cellData[row][4];
+        temp.type = cellData[row][5];
+        temp.show = cellData[row][6];
         inventory.push(temp);
     }
 
@@ -42,8 +54,8 @@ async function getJuniorSale() {
         element.photo.push(document.getElementById("photo" + i));
     }
 
-    displayItems();
     domLoaded();
+    displayItems();
 }
 
 const loading = document.getElementById("loading");
@@ -55,47 +67,92 @@ function domLoaded() {
     mainDiv.style = "";
 }
 
+const changes = [];
 
 getJuniorSale();
 function displayItems() {
     var rowEntries = 0;
-    var row = 0;
-    inventory.forEach((item, index) => {
-        const htmlDiv = `
-            <div style="gap: 2%; flex-wrap: wrap;" id="row${row}" class="mainDivSub flex"></div>
-        `
-        const htmlItem = `
+    var currentRow = null;
+    const debouncedSave = debounce(saveChanges, 3000)
+
+    function saveChanges() {
+        console.log('Here');
+    }
+
+    inventory.forEach((item) => {
+        if (item.show == true) {
+
+            if (rowEntries === 0 || rowEntries === 3) {
+                const rowId = `row-${Math.random().toString(36).substr(2, 9)}`; // Unique ID for the row
+                const htmlDiv = `<div style="gap: 2%; flex-wrap: wrap; display: flex;" id="${rowId}" class="mainDivSub"></div>`;
+
+                mainDivSub.insertAdjacentHTML('beforeend', htmlDiv);
+                currentRow = document.getElementById(rowId);
+                rowEntries = 0;
+            }
+
+            const htmlItem = `
             <div style="background-color: whitesmoke; padding: 5%;">
                 <img width="150px" height="150px" src="${item.photo}">
                 <p style="margin: 0;">${item.name}</p>
-                <p style="margin: 0;">${item.cost}</p>
+                <p style="margin: 0;">$${item.cost}</p>
                 <div style="gap: 3%; text-align: center; justify-content: space-around;" class="itemDisplay">
-                    <button class="quantityButton">+</button>
-                    <p>${item.quantity}</p>
-                    <button class="quantityButton">-</button>
+                    <button id="addButton${item.id}" class="quantityButton">+</button>
+                    <input value="${item.quantity}" id="qtyDisplay${item.id}" class="quantitySelector" type="tel" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                    <button id="subButton${item.id}" class="quantityButton">-</button>
                 </div>
             </div>
-            `;
-            if (rowEntries < 3) {
-            lastElement = mainDivSub.lastElementChild;
-            if (lastElement == null){
-                mainDivSub.insertAdjacentHTML('beforeend', htmlDiv);
-                row++;
-            }
-            else{
-                lastElement.insertAdjacentHTML('beforeend', htmlItem);
-                rowEntries++;
-            }
-        }
-        else if (rowEntries == 3) {
-            lastElement = mainDiv.lastElementChild;
-            lastElement.insertAdjacentHTML('beforeend', htmlDiv);
-            row++;
-            rowEntries = 0;
-        }
+        `;
 
+            currentRow.insertAdjacentHTML('beforeend', htmlItem);
+            rowEntries++;
+
+            const addButton = document.getElementById(`addButton${item.id}`);
+            const subButton = document.getElementById(`subButton${item.id}`);
+            const qtyDisplay = document.getElementById(`qtyDisplay${item.id}`);
+            function updateQuantity() {
+                qtyDisplay.value = item.quantity;
+                fetch(url + "?action=updateQuantity", {
+                    mode: "no-cors",
+                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    body: JSON.stringify({ id: item.id, quantity: item.quantity }),
+                })
+                    .then(response => console.log('Sheet updated!'))
+                    .catch(error => console.error('Error!', error.message));
+            }
+
+            function change(quantity) {
+
+                let x = changes.findIndex(c => c.id === item.id)
+                if (x !== -1) {
+                    changes[x].quantity = Number(changes[x].quantity) + Number(quantity);
+                    qtyDisplay.value = changes[x].quantity;
+                }
+                else {
+                    let changeEntry = { id: item.id, quantity: Number(quantity) };
+                    changes.push(changeEntry);
+                    qtyDisplay.value = changeEntry.quantity;
+                    console.log(changes);
+                    debouncedSave();
+                }
+
+            }
+
+            qtyDisplay.addEventListener("input", function () {
+                change(qtyDisplay.value);
+            })
+
+            addButton.addEventListener("click", function () {
+                change(1);
+            });
+
+            subButton.addEventListener("click", function () {
+                change(-1);
+            });
+        }
     });
 }
 
 
-
+function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }

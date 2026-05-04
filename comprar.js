@@ -1,5 +1,5 @@
 // 1. Configuración Inicial e IDs de Elementos
-const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec"; 
+const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec";
 const tableBody = document.getElementById("tableBody");
 const searchBar = document.getElementById("searchBar");
 const chosenStudent = document.getElementById("chosenStudent");
@@ -21,42 +21,17 @@ const form = document.getElementById("form"); // Asegúrate de que tu <form> ten
 let allUsers = { names: [], grades: [], balances: [], bolivares: [] };
 let selectedUser = null;
 let pendingTransactions = []; // DEFINIDA PARA EVITAR EL ERROR
+const inventoryUpdater = [];
 let data = {};
 
-// 2. Listas de Productos
-const foodItems = [
-    ["Brownie/Brookie", 3], ["Brownie Chiquito", 1], ["Cachito", 3], ["Chupi Chupi", 1],
-    ["Cocosete", 2], ["Cotufa", 1], ["Corneto Clasico", 4], ["Corneto Vasito Jazz", 2.5],
-    ["Magnum Almendras", 4], ["Magnum White Almond", 4], ["Magnum Cappuccino", 4],
-    ["Magnum Cookies N Cream", 4], ["Sandwitch Vainilla", 3], ["Helado Nucita", 2],
-    ["Bati Bati", 1.5], ["Merengada Vasito", 2], ["Dona", 3.5], ["Empanada", 3],
-    ["Sandwitch", 3], ["Samba", 3], ["Galleta", 3], ["Galleta Renatta", 3],
-    ["Gomitas", 3], ["Papas Piter", 2], ["Pirulin", 1], ["Polvorosas", 2],
-    ["Ring Pop", 1], ["Tequeños", 1], ["Torta", 3], ["Toston Grande", 3], ["Toston Pequeño", 2]
-];
 
-const drinkItems = [
-    ["Jugo", 1], ["Agua", 1], ["Agua Saborizada", 1], ["Nestea", 1],
-    ["Yolo", 3], ["Yolo Fit", 5.5], ["Refresco de Lata", 2], ["Refresco", 1]
-];
+// 2. Listas de Productos
 
 // Llenar selectores
 const comidaGroup = document.getElementById("comidaGroup");
 const bebidaGroup = document.getElementById("bebidaGroup");
 
-foodItems.forEach(f => {
-    let opt = document.createElement("option");
-    opt.innerText = f[0];
-    opt.value = f[0];
-    comidaGroup.appendChild(opt);
-});
-
-drinkItems.forEach(d => {
-    let opt = document.createElement("option");
-    opt.innerText = d[0];
-    opt.value = d[0];
-    bebidaGroup.appendChild(opt);
-});
+const inventory = { id: [], name: [], cost: [], quantity: [], photo: [], type: [], show: [] };
 
 // 3. Funciones de Datos (GET)
 async function getJuniorSale() {
@@ -64,6 +39,7 @@ async function getJuniorSale() {
         const response = await fetch(juniorSaleAPI);
         const data = await response.json();
         const cellData = data.cellData;
+        const inventoryData = data.inventory
 
         if (cellData && cellData.length > 0) {
             allUsers.names = []; allUsers.grades = []; allUsers.balances = []; allUsers.bolivares = [];
@@ -74,7 +50,35 @@ async function getJuniorSale() {
                 allUsers.bolivares.push(row[3]);
             });
         }
+        if (inventoryData && inventoryData.length > 0) {
+            inventory.id = []; inventory.name = []; inventory.cost = []; inventory.quantity = []; inventory.photo = []; inventory.type = []; inventory.show = [];
+            inventoryData.forEach((row) => {
+                inventory.id.push(row[0]);
+                inventory.name.push(row[1]);
+                inventory.cost.push(row[2]);
+                inventory.quantity.push(row[3]);
+                inventory.photo.push(row[4]);
+                inventory.type.push(row[5]);
+                inventory.show.push(row[6]);
+            });
+        }
+
+        for (let i = 0; i < inventory.name.length; i++) {
+
+            if (inventory.show[i] === true) {
+                let opt = document.createElement("option");
+                opt.innerText = inventory.name[i];
+                opt.value = inventory.id[i];
+
+                if (inventory.type[i] === "food") {
+                    comidaGroup.appendChild(opt);
+                } else if (inventory.type[i] === "drink") {
+                    bebidaGroup.appendChild(opt);
+                }
+            }
+        }
         showJuniorSale(1);
+        mainDiv.style = "";
     } catch (error) {
         console.error("Error cargando datos:", error);
     }
@@ -117,34 +121,36 @@ function showJuniorSale(page, filter = false) {
     });
 }
 
-// 4. Lógica de Interfaz
 item.addEventListener("input", function () {
     if (item.value == "custom") {
         itemName.classList.remove("hidden");
+        itemName.value = "";
         cost.readOnly = false;
         cost.value = "";
     } else {
         itemName.classList.add("hidden");
         cost.readOnly = true;
-        const allItems = [...foodItems, ...drinkItems];
-        const selected = allItems.find(i => i[0] === item.value);
-        if (selected) {
-            itemName.value = selected[0];
-            cost.value = selected[1];
+
+        const selectedId = Number(item.value);
+
+        const index = inventory.id.indexOf(selectedId);
+
+        if (index !== -1) {
+            itemName.value = inventory.name[index];
+            cost.value = inventory.cost[index];
         }
     }
 });
-
 modeSelect.addEventListener("input", function () {
     const isBuy = modeSelect.value == "buy";
     const isPay = modeSelect.value == "pay";
-    
+
     comprarDiv.classList.toggle("hidden", modeSelect.value == "none");
     item.classList.toggle("hidden", !isBuy);
     productoLabel.classList.toggle("hidden", !isBuy);
     cantidadLabel.classList.toggle("hidden", !isBuy);
     quantity.classList.toggle("hidden", !isBuy);
-    
+
     montoLabel.textContent = isBuy ? "Precio" : "Monto";
     cost.readOnly = isBuy;
 });
@@ -165,7 +171,7 @@ function updateHistory() {
     });
 }
 
-window.removeTrans = function(index) {
+window.removeTrans = function (index) {
     pendingTransactions.splice(index, 1);
     updateHistory();
 };
@@ -178,11 +184,18 @@ form.addEventListener("submit", function (event) {
     const now = new Date();
     const timeStr = `${now.toLocaleString('en-US', { month: 'short' })} ${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
     const sID = localStorage.getItem("sellerID");
-
+    let newID = 0;
     if (!selectedUser) { alert("¡Tienes que escoger un nombre!"); return; }
     if (!isNumber(cost.value)) { alert("Precio inválido"); return; }
 
+    for (let x = 0; x < inventory.name.length; x++) {
+        if (itemName.value == inventory.name[x]) {
+            newID = inventory.id[x];
+        }
+    }
+
     let transData = {
+        itemId: newID,
         sellerID: sID,
         buyer: selectedUser,
         item: modeSelect.value === "buy" ? itemName.value : "Pago",
@@ -192,6 +205,27 @@ form.addEventListener("submit", function (event) {
     };
 
     pendingTransactions.push(transData);
+
+
+    pendingTransactions.forEach(object => {
+        if (object.itemId === "N/A" || !object.itemId) return;
+        let found = false;
+        for (let z = 0; z < inventoryUpdater.length; z++) {
+            if (object.itemId == inventoryUpdater[z].id) {
+                inventoryUpdater[z].quantity += parseFloat(object.quantity);
+                found = true;
+                console.log(inventoryUpdater);
+                break;
+            }
+        }
+        if (!found) {
+            let temp = {
+                id: object.itemId,
+                quantity: parseFloat(object.quantity)
+            };
+            inventoryUpdater.push(temp);
+        }
+    }); console.log(inventoryUpdater);
     form.reset();
     chosenStudent.textContent = "Seleccione un nombre";
     selectedUser = null;
@@ -201,16 +235,24 @@ form.addEventListener("submit", function (event) {
 // 7. Envío Final a Google Sheets
 finalSubmitButton.addEventListener("click", async function () {
     if (pendingTransactions.length === 0) return;
-
     cargandoLabel.classList.remove("hidden");
     finalSubmitButton.classList.add("hidden");
-
+    inventoryUpdater.forEach(f => {
+        for (let x = 0; x<inventory.id.length; x++){
+            if (f.id == inventory.id[x]){
+                inventory.quantity[x] -= f.quantity;
+                console.log(inventory.quantity);
+                break;
+            }
+        }
+    });
+    
     try {
         await fetch(juniorSaleAPI, {
             method: 'POST',
             mode: "no-cors",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ transactions: pendingTransactions }),
+            body: JSON.stringify({ transactions: pendingTransactions, inventory: inventory }),
         });
 
         alert("¡Transacciones enviadas con éxito!");
