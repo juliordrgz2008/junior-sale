@@ -1,4 +1,4 @@
-// 1. Configuración Inicial e IDs de Elementos
+// 1. Configuración Inicial e IDs
 const juniorSaleAPI = "https://script.google.com/macros/s/AKfycbyQmhLUBAc1oA141M5th7SJjMshLHMQaYHZdvtfS4H7nOAdWw9vA-9Wmqa5fI7X0RSH/exec";
 const tableBody = document.getElementById("tableBody");
 const searchBar = document.getElementById("searchBar");
@@ -15,23 +15,16 @@ const cost = document.getElementById("cost");
 const finalSubmitButton = document.getElementById("finalSubmitButton");
 const transDisplayBody = document.getElementById("transDisplayBody");
 const cargandoLabel = document.getElementById("cargandoLabel");
-const form = document.getElementById("form"); // Asegúrate de que tu <form> tenga id="form"
+const form = document.getElementById("form");
+const modeSelect = document.getElementById("modeSelect");
+const comprarDiv = document.getElementById("comprarDiv");
+const mainDiv = document.getElementById("mainDiv");
 
-// VARIABLES GLOBALES (Aquí estaba el error, faltaba definirlas)
+// VARIABLES GLOBALES
 let allUsers = { names: [], grades: [], balances: [], bolivares: [] };
 let selectedUser = null;
-let pendingTransactions = []; // DEFINIDA PARA EVITAR EL ERROR
-const inventoryUpdater = [];
-let data = {};
-
-
-// 2. Listas de Productos
-
-// Llenar selectores
-const comidaGroup = document.getElementById("comidaGroup");
-const bebidaGroup = document.getElementById("bebidaGroup");
-
-const inventory = { id: [], name: [], cost: [], quantity: [], photo: [], type: [], show: [] };
+let pendingTransactions = [];
+let inventory = { id: [], name: [], cost: [], quantity: [], photo: [], type: [], show: [] };
 
 // 3. Funciones de Datos (GET)
 async function getJuniorSale() {
@@ -39,46 +32,41 @@ async function getJuniorSale() {
         const response = await fetch(juniorSaleAPI);
         const data = await response.json();
         const cellData = data.cellData;
-        const inventoryData = data.inventory
+        const inventoryData = data.inventory;
 
-        if (cellData && cellData.length > 0) {
-            allUsers.names = []; allUsers.grades = []; allUsers.balances = []; allUsers.bolivares = [];
-            cellData.forEach((row) => {
-                allUsers.names.push(row[0]);
-                allUsers.grades.push(row[1]);
-                allUsers.balances.push(row[2]);
-                allUsers.bolivares.push(row[3]);
-            });
-        }
-        if (inventoryData && inventoryData.length > 0) {
-            inventory.id = []; inventory.name = []; inventory.cost = []; inventory.quantity = []; inventory.photo = []; inventory.type = []; inventory.show = [];
-            inventoryData.forEach((row) => {
-                inventory.id.push(row[0]);
-                inventory.name.push(row[1]);
-                inventory.cost.push(row[2]);
-                inventory.quantity.push(row[3]);
-                inventory.photo.push(row[4]);
-                inventory.type.push(row[5]);
-                inventory.show.push(row[6]);
-            });
+        if (cellData) {
+            allUsers.names = cellData.map(r => r[0]);
+            allUsers.grades = cellData.map(r => r[1]);
+            allUsers.balances = cellData.map(r => r[2]);
+            allUsers.bolivares = cellData.map(r => r[3]);
         }
 
-        for (let i = 0; i < inventory.name.length; i++) {
+        if (inventoryData) {
+            inventory.id = inventoryData.map(r => r[0]);
+            inventory.name = inventoryData.map(r => r[1]);
+            inventory.cost = inventoryData.map(r => r[2]);
+            inventory.quantity = inventoryData.map(r => r[3]);
+            inventory.photo = inventoryData.map(r => r[4]);
+            inventory.type = inventoryData.map(r => r[5]);
+            inventory.show = inventoryData.map(r => r[6]);
 
-            if (inventory.show[i] === true) {
-                let opt = document.createElement("option");
-                opt.innerText = inventory.name[i];
-                opt.value = inventory.id[i];
+            // Fill Selectors
+            const comidaGroup = document.getElementById("comidaGroup");
+            const bebidaGroup = document.getElementById("bebidaGroup");
+            comidaGroup.innerHTML = ""; bebidaGroup.innerHTML = "";
 
-                if (inventory.type[i] === "food") {
-                    comidaGroup.appendChild(opt);
-                } else if (inventory.type[i] === "drink") {
-                    bebidaGroup.appendChild(opt);
+            for (let i = 0; i < inventory.name.length; i++) {
+                if (inventory.show[i] === true || inventory.show[i] === "TRUE") {
+                    let opt = document.createElement("option");
+                    opt.innerText = inventory.name[i];
+                    opt.value = inventory.id[i];
+                    if (inventory.type[i] === "food") comidaGroup.appendChild(opt);
+                    else if (inventory.type[i] === "drink") bebidaGroup.appendChild(opt);
                 }
             }
         }
         showJuniorSale(1);
-        mainDiv.style = "";
+        mainDiv.style.visibility = "visible";
     } catch (error) {
         console.error("Error cargando datos:", error);
     }
@@ -90,7 +78,7 @@ function showJuniorSale(page, filter = false) {
     const filterValue = searchBar.value.toLowerCase();
 
     for (let i = 0; i < allUsers.names.length; i++) {
-        if (!filter || allUsers.names[i].toLowerCase().startsWith(filterValue)) {
+        if (!filter || allUsers.names[i].toLowerCase().includes(filterValue)) {
             usersToShow.push({
                 name: allUsers.names[i],
                 grade: allUsers.grades[i],
@@ -121,6 +109,7 @@ function showJuniorSale(page, filter = false) {
     });
 }
 
+// 4. Listeners de Interfaz
 item.addEventListener("input", function () {
     if (item.value == "custom") {
         itemName.classList.remove("hidden");
@@ -132,30 +121,25 @@ item.addEventListener("input", function () {
         cost.readOnly = true;
         const selectedId = Number(item.value);
         const index = inventory.id.indexOf(selectedId);
-        
         if (index !== -1) {
             itemName.value = inventory.name[index];
             cost.value = inventory.cost[index];
             quantity.max = inventory.quantity[index];
-
         }
     }
 });
+
 modeSelect.addEventListener("input", function () {
     const isBuy = modeSelect.value == "buy";
-    const isPay = modeSelect.value == "pay";
-
     comprarDiv.classList.toggle("hidden", modeSelect.value == "none");
     item.classList.toggle("hidden", !isBuy);
     productoLabel.classList.toggle("hidden", !isBuy);
     cantidadLabel.classList.toggle("hidden", !isBuy);
     quantity.classList.toggle("hidden", !isBuy);
-
     montoLabel.textContent = isBuy ? "Precio" : "Monto";
     cost.readOnly = isBuy;
 });
 
-// 5. Manejo de Transacciones (PENDING)
 function updateHistory() {
     transDisplayBody.innerHTML = "";
     pendingTransactions.forEach((t, index) => {
@@ -178,71 +162,56 @@ window.removeTrans = function (index) {
 
 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
-// 6. Evento Submit del Formulario (Añadir a la lista)
+// 5. EVENTO SUBMIT (Añadir a la lista) - FIX PARA EL ERROR DE "7 ITEMS"
 form.addEventListener("submit", function (event) {
     event.preventDefault();
-    const now = new Date();
-    const timeStr = `${now.toLocaleString('en-US', { month: 'short' })} ${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
-    const sID = localStorage.getItem("sellerID");
-    let newID = 0;
     if (!selectedUser) { alert("¡Tienes que escoger un nombre!"); return; }
     if (!isNumber(cost.value)) { alert("Precio inválido"); return; }
 
-    for (let x = 0; x < inventory.name.length; x++) {
-        if (itemName.value == inventory.name[x]) {
-            newID = inventory.id[x];
-        }
+    const now = new Date();
+    const timeStr = `${now.toLocaleString('en-US', { month: 'short' })} ${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+    const sID = localStorage.getItem("sellerID");
+    
+    let currentItemID = null;
+    if (modeSelect.value === "buy") {
+        currentItemID = Number(item.value);
     }
 
     let transData = {
-        itemId: newID,
+        itemId: currentItemID,
         sellerID: sID,
         buyer: selectedUser,
         item: modeSelect.value === "buy" ? itemName.value : "Pago",
         cost: modeSelect.value === "buy" ? parseFloat(cost.value) : parseFloat(cost.value) * -1,
-        quantity: quantity.value || 1,
+        quantity: parseInt(quantity.value) || 1,
         time: timeStr
     };
 
     pendingTransactions.push(transData);
-
-
-    pendingTransactions.forEach(object => {
-        if (object.itemId === "N/A" || !object.itemId) return;
-        let found = false;
-        for (let z = 0; z < inventoryUpdater.length; z++) {
-            if (object.itemId == inventoryUpdater[z].id) {
-                inventoryUpdater[z].quantity += parseFloat(object.quantity);
-                found = true;
-                console.log(inventoryUpdater);
-                break;
-            }
-        }
-        if (!found) {
-            let temp = {
-                id: object.itemId,
-                quantity: parseFloat(object.quantity)
-            };
-            inventoryUpdater.push(temp);
-        }
-    }); console.log(inventoryUpdater);
+    
+    // Reset individual selection
     form.reset();
     chosenStudent.textContent = "Seleccione un nombre";
     selectedUser = null;
     updateHistory();
 });
 
-// 7. Envío Final a Google Sheets
+// 6. ENVÍO FINAL - FIX PARA EL BOTÓN Y LA CANTIDAD
 finalSubmitButton.addEventListener("click", async function () {
-    if (pendingTransactions.length === 0) return;
+    if (pendingTransactions.length === 0) {
+        alert("No hay transacciones para mandar.");
+        return;
+    }
+
     cargandoLabel.classList.remove("hidden");
     finalSubmitButton.classList.add("hidden");
-    inventoryUpdater.forEach(f => {
-        for (let x = 0; x < inventory.id.length; x++) {
-            if (f.id == inventory.id[x]) {
-                inventory.quantity[x] -= f.quantity;
-                console.log(inventory.quantity);
-                break;
+
+    // Actualizamos el inventario local basado en lo que hay en el carrito
+    pendingTransactions.forEach(t => {
+        if (t.itemId) {
+            const idx = inventory.id.indexOf(t.itemId);
+            if (idx !== -1) {
+                inventory.quantity[idx] -= t.quantity;
             }
         }
     });
@@ -252,13 +221,19 @@ finalSubmitButton.addEventListener("click", async function () {
             method: 'POST',
             mode: "no-cors",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ transactions: pendingTransactions, inventory: inventory }),
+            body: JSON.stringify({ 
+                transactions: pendingTransactions, 
+                inventory: {
+                    id: inventory.id,
+                    quantity: inventory.quantity
+                }
+            }),
         });
 
         alert("¡Transacciones enviadas con éxito!");
-        pendingTransactions = [];
         window.location.reload();
     } catch (error) {
+        console.error("Error:", error);
         cargandoLabel.classList.add("hidden");
         finalSubmitButton.classList.remove("hidden");
         alert("Error al enviar. Intente de nuevo.");
