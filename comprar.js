@@ -189,7 +189,7 @@ form.addEventListener("submit", function (event) {
         cost: modeSelect.value === "buy" ? parseFloat(cost.value) : parseFloat(cost.value) * -1,
         quantity: parseInt(quantity.value) || 1,
         time: timeStr,
-        prepaid : prepaid.value
+        prepaid : prepaid.checked
     };
 
     pendingTransactions.push(transData);
