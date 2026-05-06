@@ -19,6 +19,9 @@ const form = document.getElementById("form");
 const modeSelect = document.getElementById("modeSelect");
 const comprarDiv = document.getElementById("comprarDiv");
 const mainDiv = document.getElementById("mainDiv");
+const prepaidLabel = document.getElementById("prepaidLabel");
+const prepaid = document.getElementById("prepaid");
+
 
 // VARIABLES GLOBALES
 let allUsers = { names: [], grades: [], balances: [], bolivares: [] };
@@ -133,6 +136,8 @@ modeSelect.addEventListener("input", function () {
     const isBuy = modeSelect.value == "buy";
     comprarDiv.classList.toggle("hidden", modeSelect.value == "none");
     item.classList.toggle("hidden", !isBuy);
+    prepaidLabel.classList.toggle("hidden", !isBuy);
+    prepaid.classList.toggle("hidden", !isBuy);
     productoLabel.classList.toggle("hidden", !isBuy);
     cantidadLabel.classList.toggle("hidden", !isBuy);
     quantity.classList.toggle("hidden", !isBuy);
@@ -162,7 +167,6 @@ window.removeTrans = function (index) {
 
 function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
 
-// 5. EVENTO SUBMIT (Añadir a la lista) - FIX PARA EL ERROR DE "7 ITEMS"
 form.addEventListener("submit", function (event) {
     event.preventDefault();
     if (!selectedUser) { alert("¡Tienes que escoger un nombre!"); return; }
@@ -184,7 +188,8 @@ form.addEventListener("submit", function (event) {
         item: modeSelect.value === "buy" ? itemName.value : "Pago",
         cost: modeSelect.value === "buy" ? parseFloat(cost.value) : parseFloat(cost.value) * -1,
         quantity: parseInt(quantity.value) || 1,
-        time: timeStr
+        time: timeStr,
+        prepaid : prepaid.value
     };
 
     pendingTransactions.push(transData);
