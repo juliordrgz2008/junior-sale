@@ -23,6 +23,54 @@ const prepaidLabel = document.getElementById("prepaidLabel");
 const prepaid = document.getElementById("prepaid");
 
 
+
+// Inventory updater
+async function updateInventory() {
+    const response = await fetch(juniorSaleAPI);
+    const data = await response.json();
+    const inventoryData = data.inventory;
+
+    if (inventoryData) {
+        inventory.id = inventoryData.map(r => r[0]);
+        inventory.name = inventoryData.map(r => r[1]);
+        inventory.cost = inventoryData.map(r => r[2]);
+        inventory.quantity = inventoryData.map(r => r[3]);
+        inventory.photo = inventoryData.map(r => r[4]);
+        inventory.type = inventoryData.map(r => r[5]);
+        inventory.show = inventoryData.map(r => r[6]);
+
+        // Fill Selectors
+        const comidaGroup = document.getElementById("comidaGroup");
+        const bebidaGroup = document.getElementById("bebidaGroup");
+        comidaGroup.innerHTML = ""; bebidaGroup.innerHTML = "";
+
+        for (let i = 0; i < inventory.name.length; i++) {
+            if (inventory.show[i] === true || inventory.show[i] === "TRUE") {
+                let opt = document.createElement("option");
+                opt.innerText = inventory.name[i];
+                opt.value = inventory.id[i];
+                
+                if (inventory.type[i] === "food") comidaGroup.appendChild(opt);
+                else if (inventory.type[i] === "drink") bebidaGroup.appendChild(opt);
+            }
+        }
+    }
+    console.log("Inventario actualizado");
+}
+
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(this, args), delay);
+    }
+}
+
+function debouncedUpdateInventory() {
+    debounce(updateInventory, 10000)();
+}
+
+
 // VARIABLES GLOBALES
 let allUsers = { names: [], grades: [], balances: [], bolivares: [] };
 let selectedUser = null;
@@ -70,6 +118,9 @@ async function getJuniorSale() {
         }
         showJuniorSale(1);
         mainDiv.style.visibility = "visible";
+        debouncedUpdateInventory();
+        setInterval(debouncedUpdateInventory, 10000);
+
     } catch (error) {
         console.error("Error cargando datos:", error);
     }
@@ -127,7 +178,6 @@ item.addEventListener("input", function () {
         if (index !== -1) {
             itemName.value = inventory.name[index];
             cost.value = inventory.cost[index];
-            quantity.max = inventory.quantity[index];
         }
     }
 });
@@ -175,7 +225,7 @@ form.addEventListener("submit", function (event) {
     const now = new Date();
     const timeStr = `${now.toLocaleString('en-US', { month: 'short' })} ${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
     const sID = localStorage.getItem("sellerID");
-    
+
     let currentItemID = null;
     if (modeSelect.value === "buy") {
         currentItemID = Number(item.value);
@@ -189,11 +239,11 @@ form.addEventListener("submit", function (event) {
         cost: modeSelect.value === "buy" ? parseFloat(cost.value) : parseFloat(cost.value) * -1,
         quantity: parseInt(quantity.value) || 1,
         time: timeStr,
-        prepaid : prepaid.checked
+        prepaid: prepaid.checked
     };
 
     pendingTransactions.push(transData);
-    
+
     // Reset individual selection
     form.reset();
     chosenStudent.textContent = "Seleccione un nombre";
@@ -212,6 +262,7 @@ finalSubmitButton.addEventListener("click", async function () {
     finalSubmitButton.classList.add("hidden");
 
     // Actualizamos el inventario local basado en lo que hay en el carrito
+
     pendingTransactions.forEach(t => {
         if (t.itemId) {
             const idx = inventory.id.indexOf(t.itemId);
@@ -226,8 +277,8 @@ finalSubmitButton.addEventListener("click", async function () {
             method: 'POST',
             mode: "no-cors",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                transactions: pendingTransactions, 
+            body: JSON.stringify({
+                transactions: pendingTransactions,
                 inventory: {
                     id: inventory.id,
                     quantity: inventory.quantity
